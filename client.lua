@@ -269,7 +269,7 @@ function client.openInventory(inv, data)
     SetNuiFocusKeepInput(true)
     closeTrunk()
 
-    if client.screenblur then TriggerScreenblurFadeIn(0) end
+    if client.screenblur then TriggerScreenblurFadeIn(150) end
 
     currentInventory = right or defaultInventory
     left.items = PlayerData.inventory
@@ -326,7 +326,7 @@ RegisterNetEvent('ox_inventory:forceOpenInventory', function(left, right)
 	SetNuiFocusKeepInput(true)
 	closeTrunk()
 
-	if client.screenblur then TriggerScreenblurFadeIn(0) end
+	if client.screenblur then TriggerScreenblurFadeIn(150) end
 
 	currentInventory = right or defaultInventory
 	currentInventory.ignoreSecurityChecks = true
@@ -883,6 +883,7 @@ function client.closeInventory(server)
 		invOpen = nil
 		SetNuiFocus(false, false)
 		SetNuiFocusKeepInput(false)
+		if IsScreenblurFadeRunning() then DisableScreenblurFade() end
 		TriggerScreenblurFadeOut(0)
 		closeTrunk()
 		SendNUIMessage({ action = 'closeInventory' })
@@ -1584,7 +1585,7 @@ RegisterNetEvent('ox_inventory:viewInventory', function(left, right)
 	SetNuiFocusKeepInput(true)
 	closeTrunk()
 
-	if client.screenblur then TriggerScreenblurFadeIn(0) end
+	if client.screenblur then TriggerScreenblurFadeIn(150) end
 
 	currentInventory = right or defaultInventory
 	currentInventory.ignoreSecurityChecks = true
