@@ -215,7 +215,7 @@ function Utils.blurIn()
         DisableScreenblurFade()
     end
 
-    TriggerScreenblurFadeIn(250)
+    TriggerScreenblurFadeIn(100)
 end
 
 function Utils.blurOut()
