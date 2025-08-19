@@ -16,7 +16,8 @@ local function setupShopItems(id, shopType, shopName, groups)
 		local slot = shop.items[i]
 
 		if slot.grade and not groups then
-			print(('^1attempted to restrict slot %s (%s) to grade %s, but %s has no job restriction^0'):format(id, slot.name, json.encode(slot.grade), shopName))
+			print(('^1attempted to restrict slot %s (%s) to grade %s, but %s has no job restriction^0'):format(id,
+				slot.name, json.encode(slot.grade), shopName))
 			slot.grade = nil
 		end
 
@@ -29,7 +30,8 @@ local function setupShopItems(id, shopType, shopName, groups)
 				slot = i,
 				weight = Item.weight,
 				count = slot.count,
-				price = (server.randomprices and (not slot.currency or slot.currency == 'money')) and (math.ceil(slot.price * (math.random(80, 120)/100))) or slot.price or 0,
+				price = (server.randomprices and (not slot.currency or slot.currency == 'money')) and
+				(math.ceil(slot.price * (math.random(80, 120) / 100))) or slot.price or 0,
 				metadata = slot.metadata,
 				license = slot.license,
 				currency = slot.currency,
@@ -78,22 +80,22 @@ local function createShop(shopType, id)
 	if not store then return end
 
 	local groups = shop.groups or shop.jobs
-    local coords
+	local coords
 
-    if shared.target then
-        if store.length then
-            local z = store.loc.z + math.abs(store.minZ - store.maxZ) / 2
-            coords = vec3(store.loc.x, store.loc.y, z)
-        else
-            coords = store.coords or store.loc
-        end
-    else
-        coords = store
-    end
+	if shared.target then
+		if store.length then
+			local z = store.loc.z + math.abs(store.minZ - store.maxZ) / 2
+			coords = vec3(store.loc.x, store.loc.y, z)
+		else
+			coords = store.coords or store.loc
+		end
+	else
+		coords = store
+	end
 
 	shop[id] = {
 		label = shop.name,
-		id = shopType..' '..id,
+		id = shopType .. ' ' .. id,
 		groups = groups,
 		items = table.clone(shop.inventory),
 		slots = #shop.inventory,
@@ -149,7 +151,8 @@ lib.callback.register('ox_inventory:openShop', function(source, data)
 		left.currentShop = shop.id
 	end
 
-	return { label = left.label, type = left.type, slots = left.slots, weight = left.weight, maxWeight = left.maxWeight }, shop
+	return { label = left.label, type = left.type, slots = left.slots, weight = left.weight, maxWeight = left.maxWeight },
+		shop
 end)
 
 local function canAffordItem(inv, currency, price)
@@ -157,7 +160,9 @@ local function canAffordItem(inv, currency, price)
 
 	return canAfford or {
 		type = 'error',
-		description = locale('cannot_afford', ('%s%s'):format((currency == 'money' and locale('$') or math.groupdigits(price)), (currency == 'money' and math.groupdigits(price) or ' '..Items(currency).label)))
+		description = locale('cannot_afford',
+			('%s%s'):format((currency == 'money' and locale('$') or math.groupdigits(price)),
+				(currency == 'money' and math.groupdigits(price) or ' ' .. Items(currency).label)))
 	}
 end
 
@@ -169,7 +174,7 @@ local TriggerEventHooks = require 'modules.hooks.server'
 
 local function isRequiredGrade(grade, rank)
 	if type(grade) == "table" then
-		for i=1, #grade do
+		for i = 1, #grade do
 			if grade[i] == rank then
 				return true
 			end
@@ -226,7 +231,8 @@ lib.callback.register('ox_inventory:buyItem', function(source, data)
 
 			local toItem = toData and Items(toData.name)
 
-			local metadata, count = Items.Metadata(playerInv, fromItem, fromData.metadata and table.clone(fromData.metadata) or {}, data.count)
+			local metadata, count = Items.Metadata(playerInv, fromItem,
+				fromData.metadata and table.clone(fromData.metadata) or {}, data.count)
 			local price = count * fromData.price
 
 			if toData == nil or (fromItem.name == toItem?.name and fromItem.stack and table.matches(toData.metadata, metadata)) then
@@ -243,19 +249,21 @@ lib.callback.register('ox_inventory:buyItem', function(source, data)
 				end
 
 				if not TriggerEventHooks('buyItem', {
-					source = source,
-					shopType = shopType,
-					shopId = shopId,
-					toInventory = playerInv.id,
-					toSlot = data.toSlot,
-					fromSlot = fromData,
-					itemName = fromData.name,
-					metadata = metadata,
-					count = count,
-					price = fromData.price,
-					totalPrice = price,
-					currency = currency,
-				}) then return false end
+						source = source,
+						shopType = shopType,
+						shopId = shopId,
+						toInventory = playerInv.id,
+						toSlot = data.toSlot,
+						fromSlot = fromData,
+						itemName = fromData.name,
+						metadata = metadata,
+						count = count,
+						price = fromData.price,
+						totalPrice = price,
+						currency = currency,
+					}) then
+					return false
+				end
 
 				Inventory.SetSlot(playerInv, fromItem, count, metadata, data.toSlot)
 				playerInv.weight = newWeight
@@ -267,15 +275,20 @@ lib.callback.register('ox_inventory:buyItem', function(source, data)
 
 				if server.syncInventory then server.syncInventory(playerInv) end
 
-				local message = locale('purchased_for', count, metadata?.label or fromItem.label, (currency == 'money' and locale('$') or math.groupdigits(price)), (currency == 'money' and math.groupdigits(price) or ' '..Items(currency).label))
+				local message = locale('purchased_for', count, metadata?.label or fromItem.label,
+					(currency == 'money' and locale('$') or math.groupdigits(price)),
+					(currency == 'money' and math.groupdigits(price) or ' ' .. Items(currency).label))
 
 				if server.loglevel > 0 then
 					if server.loglevel > 1 or fromData.price >= 500 then
-						lib.logger(playerInv.owner, 'buyItem', ('"%s" %s'):format(playerInv.label, message:lower()), ('shop:%s'):format(shop.label))
+						lib.logger(playerInv.owner, 'buyItem', ('"%s" %s'):format(playerInv.label, message:lower()),
+							('shop:%s'):format(shop.label))
 					end
 				end
 
-				return true, {data.toSlot, playerInv.items[data.toSlot], shop.items[data.fromSlot].count and shop.items[data.fromSlot], playerInv.weight}, { type = 'success', description = message }
+				return true,
+					{ data.toSlot, playerInv.items[data.toSlot], shop.items[data.fromSlot].count and
+					shop.items[data.fromSlot], playerInv.weight }, { type = 'success', description = message }
 			end
 
 			return false, false, { type = 'error', description = locale('unable_stack_items') }

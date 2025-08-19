@@ -19,7 +19,8 @@ local function createCraftingBench(id, data)
 				recipe.weight = item.weight
 				recipe.slot = i
 			else
-				warn(('failed to setup crafting recipe (bench: %s, slot: %s) - item "%s" does not exist'):format(id, i, recipe.name))
+				warn(('failed to setup crafting recipe (bench: %s, slot: %s) - item "%s" does not exist'):format(id, i,
+					recipe.name))
 			end
 
 			for ingredient, needs in pairs(recipe.ingredients) do
@@ -112,7 +113,8 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 			end
 
 			local craftedItem = Items(recipe.name)
-			local craftCount = (type(recipe.count) == 'number' and recipe.count) or (table.type(recipe.count) == 'array' and math.random(recipe.count[1], recipe.count[2])) or 1
+			local craftCount = (type(recipe.count) == 'number' and recipe.count) or
+			(table.type(recipe.count) == 'array' and math.random(recipe.count[1], recipe.count[2])) or 1
 
 			-- Modified weight calculation
 			local newWeight = left.weight
@@ -141,7 +143,7 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 
 				local slots = items[name] or items
 
-                if #slots == 0 then return end
+				if #slots == 0 then return end
 
 				for i = 1, #slots do
 					local slot = slots[i]
@@ -183,13 +185,15 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 			end
 
 			if not TriggerEventHooks('craftItem', {
-				source = source,
-				benchId = id,
-				benchIndex = index,
-				recipe = recipe,
-				toInventory = left.id,
-				toSlot = toSlot,
-			}) then return false end
+					source = source,
+					benchId = id,
+					benchIndex = index,
+					recipe = recipe,
+					toInventory = left.id,
+					toSlot = toSlot,
+				}) then
+				return false
+			end
 
 			local success = lib.callback.await('ox_inventory:startCrafting', source, id, recipeId)
 
@@ -218,15 +222,16 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 							local emptySlot = Inventory.GetEmptySlot(left)
 
 							if emptySlot then
-								local newItem = Inventory.SetSlot(left, item, 1, table.deepclone(invSlot.metadata), emptySlot)
+								local newItem = Inventory.SetSlot(left, item, 1, table.deepclone(invSlot.metadata),
+									emptySlot)
 
 								if newItem then
-                                    Items.UpdateDurability(left, newItem, item, durability < 0 and 0 or durability)
+									Items.UpdateDurability(left, newItem, item, durability < 0 and 0 or durability)
 								end
 							end
 
 							invSlot.count -= 1
-                            invSlot.weight = Inventory.SlotWeight(item, invSlot)
+							invSlot.weight = Inventory.SlotWeight(item, invSlot)
 
 							left:syncSlotsWithClients({
 								{
@@ -235,7 +240,7 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 								}
 							}, true)
 						else
-                            Items.UpdateDurability(left, invSlot, item, durability < 0 and 0 or durability)
+							Items.UpdateDurability(left, invSlot, item, durability < 0 and 0 or durability)
 						end
 					else
 						local removed = invSlot and Inventory.RemoveItem(left, invSlot.name, count, nil, slot)
@@ -244,7 +249,8 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 					end
 				end
 
-				Inventory.AddItem(left, craftedItem, craftCount, recipe.metadata or {}, craftedItem.stack and toSlot or nil)
+				Inventory.AddItem(left, craftedItem, craftCount, recipe.metadata or {},
+					craftedItem.stack and toSlot or nil)
 			end
 
 			return success
