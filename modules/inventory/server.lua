@@ -1866,8 +1866,7 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
                     toData.weight = Inventory.SlotWeight(Items(toData.name), toData)
                     fromData.weight = Inventory.SlotWeight(Items(fromData.name), fromData)
                     hookPayload.action = 'stackItems'
-                    hookPayload.moved = moveAmount
-                    hookPayload.leftover = data.count - moveAmount
+                    hookPayload.count = data.count - moveAmount
                     if not TriggerEventHooks('swapItems', hookPayload) then return end
                 else
                     local tempCount, tempWeight = toData.count, toData.weight
