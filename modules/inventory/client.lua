@@ -54,6 +54,8 @@ local backDoorIds = { 2, 3 }
 function Inventory.CanAccessTrunk(entity)
     if cache.vehicle or not NetworkGetEntityIsNetworked(entity) then return end
 
+    if GetVehicleEngineHealth(entity) <= 0.0 and GetVehicleBodyHealth(entity) <= 0.0 then return end
+
     local vehicleHash = GetEntityModel(entity)
     local vehicleClass = GetVehicleClass(entity)
     local checkVehicle = Vehicles.Storage[vehicleHash]
